@@ -1,0 +1,6 @@
+{
+  "name": "Smart Study Scaffolder",
+  "description": "Turn brutal engineering lectures into instant survival quizzes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
