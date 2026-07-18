@@ -440,7 +440,13 @@ export default function App() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url: linkUrl })
         });
-        const ytData = await ytRes.json();
+        const textResponse = await ytRes.text();
+        let ytData;
+        try {
+          ytData = JSON.parse(textResponse);
+        } catch (e) {
+          throw new Error(`Server returned an invalid response (Status ${ytRes.status}): ${textResponse.substring(0, 100)}`);
+        }
         if (!ytRes.ok) throw new Error(ytData.error || 'Failed to process link');
         finalInputText = ytData.text;
       } catch (err: any) {
@@ -486,7 +492,13 @@ export default function App() {
         }),
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        throw new Error(`Server returned an invalid response (Status ${response.status}): ${responseText.substring(0, 100)}...`);
+      }
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to generate study guide');

@@ -110,15 +110,19 @@ async function getYoutubeMetadataAndInfo(videoId: string): Promise<string> {
     console.error('oEmbed fetch error for YouTube:', err);
   }
 
-  // 2. Try standard web scraping as a secondary fallback
+  // 2. Try standard web scraping as a secondary fallback with timeout
   try {
     const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
     const ytRes = await fetch(ytUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept-Language': 'en-US,en;q=0.5'
-      }
+      },
+      signal: controller.signal
     });
+    clearTimeout(timeoutId);
     if (ytRes.ok) {
       const html = await ytRes.text();
       if (!title) {
@@ -134,7 +138,7 @@ async function getYoutubeMetadataAndInfo(videoId: string): Promise<string> {
       }
     }
   } catch (err) {
-    console.error('Failed to scrape YouTube watch page fallback:', err);
+    console.error('Failed to scrape YouTube watch page fallback (timeout or error):', err);
   }
 
   // 3. Utilize standard Gemini generation (no search grounding) to synthesize a rich conceptual explanation
@@ -165,10 +169,13 @@ Structure your response so that it covers:
 
 Provide a rich and detailed breakdown so it can serve as a comprehensive textual source for generating notes, flashcards, and quiz questions.`;
 
-    const synthesisRes = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
-      contents: query,
-    });
+    const synthesisRes = await Promise.race([
+      ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: query,
+      }),
+      new Promise<any>((_, reject) => setTimeout(() => reject(new Error("Gemini timeout")), 5000))
+    ]);
 
     const explanation = synthesisRes.text || '';
     if (explanation) {
@@ -565,13 +572,13 @@ For the quiz:
   });
 
   // Vite middleware for development
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
     });
     app.use(vite.middlewares);
-  } else {
+  } else if (!process.env.VERCEL) {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
@@ -579,9 +586,19 @@ For the quiz:
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+  // Conditionally listen if not on Vercel
+  if (!process.env.VERCEL) {
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  }
+
+  return app;
 }
 
-startServer();
+const appPromise = startServer();
+
+export default async function handler(req: any, res: any) {
+  const app = await appPromise;
+  return app(req, res);
+}
