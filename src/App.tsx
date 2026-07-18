@@ -1154,25 +1154,52 @@ export default function App() {
                   </button>
                 </div>
 
-                {/* viaSocket Integration Hook */}
-                <div className="mt-6 flex flex-col items-center gap-2 relative z-10 pb-4">
+                {/* Telegram Bot Integration */}
+                <div className="mt-8 flex flex-col items-center gap-4 relative z-10 pb-6 border-t border-slate-100 dark:border-slate-800/80 pt-6">
                   <button 
-                    disabled
-                    className="w-full bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 font-bold py-4 px-8 rounded-2xl flex items-center justify-center gap-3 cursor-not-allowed border border-slate-200 dark:border-slate-700"
+                    onClick={() => window.open('https://t.me/STUDYSCAFF_AI_BOT', '_blank')}
+                    className="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-sky-200/40 flex items-center justify-center gap-3 transition-all active:scale-[0.98]"
                   >
-                    <Send className="w-5 h-5 text-slate-300 dark:text-slate-600" />
-                    <span>📲 Send to WhatsApp (Coming Soon)</span>
+                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15.82-1.05 5.86-1.5 8.27-.19.97-.73 1.29-1.39.91-1.02-.59-1.84-1.07-2.82-1.72-1.13-.74-.4-1.15.25-1.83.17-.18 3.12-2.86 3.18-3.11.01-.03.01-.15-.06-.21-.07-.06-.17-.04-.25-.02-.11.02-1.87 1.18-5.28 3.48-.5.34-.95.51-1.35.5-.44-.01-1.29-.25-1.92-.45-.77-.25-1.39-.39-1.34-.83.03-.23.35-.46.97-.71 3.79-1.65 6.32-2.74 7.59-3.27 3.61-1.5 4.36-1.76 4.85-1.77.11 0 .35.03.5.15.13.1.17.24.18.35-.01.12-.03.38-.05.63z" /></svg>
+                    <span>💬 Chat on Telegram with StudyScaff Bot</span>
                   </button>
-                  <p className="text-xs font-medium text-slate-400 dark:text-slate-500 text-center">
-                    Coming Soon: Integrate viaSocket to schedule this quiz for your daily revision loop.
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 text-center">
+                    Review and quiz yourself directly inside Telegram with our companion bot!
                   </p>
-                  
-                  {viaSocketToast && (
-                    <div className="fixed bottom-6 right-6 bg-emerald-600 text-white px-6 py-3 rounded-xl shadow-xl flex items-center gap-2 font-bold animate-in fade-in slide-in-from-bottom-4 z-50">
-                      <Check className="w-5 h-5" />
-                      Sent to WhatsApp!
+
+                  {/* Recreated Telegram QR Code Card from user attachment */}
+                  <div className="mt-6 relative w-full max-w-[270px] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col items-center">
+                    {/* Floating Avatar Badge with the custom color from the attachment */}
+                    <div className="absolute -top-7 w-14 h-14 bg-[#E56A53] rounded-full border-4 border-white dark:border-slate-900 flex items-center justify-center shadow-md">
+                      <span className="text-white text-2xl font-black">S</span>
                     </div>
-                  )}
+                    
+                    {/* QR Code Container */}
+                    <div className="mt-5 p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800/80 flex items-center justify-center relative group">
+                      <img 
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://t.me/STUDYSCAFF_AI_BOT" 
+                        alt="StudyScaff Bot QR Code" 
+                        className="w-40 h-40 rounded-xl"
+                        referrerPolicy="no-referrer"
+                      />
+                      {/* Telegram Icon Overlay in the center */}
+                      <div className="absolute inset-0 m-auto w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md border border-slate-100">
+                        <svg viewBox="0 0 24 24" className="w-6 h-6 text-[#54A9EB] fill-current">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15.82-1.05 5.86-1.5 8.27-.19.97-.73 1.29-1.39.91-1.02-.59-1.84-1.07-2.82-1.72-1.13-.74-.4-1.15.25-1.83.17-.18 3.12-2.86 3.18-3.11.01-.03.01-.15-.06-.21-.07-.06-.17-.04-.25-.02-.11.02-1.87 1.18-5.28 3.48-.5.34-.95.51-1.35.5-.44-.01-1.29-.25-1.92-.45-.77-.25-1.39-.39-1.34-.83.03-.23.35-.46.97-.71 3.79-1.65 6.32-2.74 7.59-3.27 3.61-1.5 4.36-1.76 4.85-1.77.11 0 .35.03.5.15.13.1.17.24.18.35-.01.12-.03.38-.05.63z" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    {/* Bot Name and Guidance */}
+                    <div className="mt-4 text-center">
+                      <p className="text-sm font-black text-[#54A9EB] tracking-wide uppercase">
+                        @STUDYSCAFF_AI_BOT
+                      </p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-1">
+                        Scan with your phone camera or Telegram scanner to connect
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
               </div>
